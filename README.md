@@ -18,8 +18,8 @@ python -m venv venv
 pip install pandas openpyxl matplotlib
 ```
 
-4. Ejecutaos el fichero main.py
-```python
+4. Ejecutamos el fichero main.py
+```bash
 python main.py
 ```
 
