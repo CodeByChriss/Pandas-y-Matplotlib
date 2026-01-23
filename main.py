@@ -7,25 +7,22 @@ import matplotlib.pyplot as plt
 campos = [] # va a contener los campos que el usuario defina para el diccionario con el siguiente formato: NOMBRE_CAMPO:TIPO_CAMPO
 diccionarios = [] # array que va a contener los diccionarios
 
+#############################################################################
+#
+#           APARTADO 1: Crear los campos del diccionario.
+#
+#############################################################################
+
+# Mostramos al usuario un pequeño menú para que vaya agregando y visualizando los campos actuales del diccionario.
 def initCrearCamposDiccionario():
     opt = 0
-    msg = ""
     while opt != 3:
         mostrarMenuCrearCamposDiccionario()
-        try:
-            opt = int(input(f"{msg}Seleccione una opción: "))
-        except ValueError:
-            msg = "Debes introducir un número. "
-            opt = 0
-        else:
-            if opt < 1 or opt > 13:
-                msg = "Esa opción no existe. "
-            else:
-                msg = "" # Limpiamos el mensaje para que luego no aparezca de forma no deseada
-                match opt:
-                    case 1: agregarCampoDiccionario()
-                    case 2: mostrarCamposDiccionario()
-                    case 3: return
+        opt = obtenerOpcion(1,3)
+        match opt:
+            case 1: agregarCampoDiccionario()
+            case 2: mostrarCamposDiccionario()
+            case 3: return
 
 # Agregamos los campos que el usuario diga a la variable global campos[]
 def agregarCampoDiccionario():
@@ -36,19 +33,10 @@ def agregarCampoDiccionario():
     campos.append(nuevoCampo)
     print("Campo registrado con éxito.")
 
+# Solicitamos al usuario un tipo de dato y lo devolvemos, en caso de error (no se cuando podría pasar porque creo que he contemplado todo) se devuelve un String
 def recogerOpcionCampos():
-    opt = 0
-    msg = ""
-    while opt < 1 or opt > 4:
-        mostrarOpcionesCampos()
-        try:
-            opt = int(input(f"{msg}Seleccione una opción: "))
-        except ValueError:
-            msg = "Debes introducir un número. "
-            opt = 0
-        else:
-            if opt < 1 or opt > 13:
-                msg = "Esa opción no existe. "
+    mostrarOpcionesCampos()
+    opt = obtenerOpcion(1,4)
     match opt:
         case 1: return "String"
         case 2: return "Integer"
@@ -90,6 +78,12 @@ def mostrarMenuCrearCamposDiccionario():
     print("╠ 3. Volver al menú princpal.")
     print("╚═════════════════════════════════════════════════════════════════╝")
 
+#############################################################################
+#
+#                           Funciones Principales
+#
+#############################################################################
+
 # Muestra por terminal el Menú Principal de la aplicación
 def mostrarMenuPrincipal():
     print("╔═══════════════════════════════════ Menú Principal ═══════════════════════════════════╗")
@@ -108,36 +102,42 @@ def mostrarMenuPrincipal():
     print("╠ 13. Salir de la aplicación.")
     print("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
-# Método principal que llama a mostrar el menú y recoge la respuesta
-def init():
-    opt = 0
+# Obtenemos la opción elegida por el usuario siempre y cuando esté entre el mínimo y el máximo
+def obtenerOpcion(min,max):
+    opt = min-1
     msg = ""
-    while opt != 13: # Mientras que la opción elegida por el usuario sea distinta a la opción de salir
-        mostrarMenuPrincipal()
+    while opt < min or opt > max:
         try:
             opt = int(input(f"{msg}Seleccione una opción: "))
         except ValueError:
             msg = "Debes introducir un número. "
-            opt = 0
+            opt = min-1
         else:
-            if opt < 1 or opt > 13:
+            if opt < min or opt > max:
                 msg = "Esa opción no existe. "
             else:
-                msg = "" # Limpiamos el mensaje para que luego no aparezca de forma no deseada
-                match opt:
-                    case 1: initCrearCamposDiccionario()
-                    case 2: print("opcion 2")
-                    case 3: print("opcion 3")
-                    case 4: print("opcion 4")
-                    case 5: print("opcion 5")
-                    case 6: print("opcion 6")
-                    case 7: print("opcion 7")
-                    case 8: print("opcion 8")
-                    case 9: print("opcion 9")
-                    case 10: print("opcion 10")
-                    case 11: print("opcion 11")
-                    case 12: print("opcion 12")
-                    case 13 : print("¡Hasta pronto!")
+                return opt
+
+# Método principal que llama a mostrar el menú y recoge la respuesta
+def init():
+    opt = 0
+    while opt != 13: # Mientras que la opción elegida por el usuario sea distinta a la opción de salir
+        mostrarMenuPrincipal()
+        opt = obtenerOpcion(1,13)
+        match opt:
+            case 1: initCrearCamposDiccionario()
+            case 2: print("opcion 2")
+            case 3: print("opcion 3")
+            case 4: print("opcion 4")
+            case 5: print("opcion 5")
+            case 6: print("opcion 6")
+            case 7: print("opcion 7")
+            case 8: print("opcion 8")
+            case 9: print("opcion 9")
+            case 10: print("opcion 10")
+            case 11: print("opcion 11")
+            case 12: print("opcion 12")
+            case 13 : print("¡Hasta pronto!")
 
     print("Programa finalizado.")
 
