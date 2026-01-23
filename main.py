@@ -36,12 +36,11 @@ def agregarCampoDiccionario():
 # Solicitamos al usuario un tipo de dato y lo devolvemos, en caso de error (no se cuando podría pasar porque creo que he contemplado todo) se devuelve un String
 def recogerOpcionCampos():
     mostrarOpcionesCampos()
-    opt = obtenerOpcion(1,4)
+    opt = obtenerOpcion(1,3)
     match opt:
         case 1: return "String"
         case 2: return "Integer"
         case 3: return "Decimal"
-        case 4: return "Boolean"
         case _: return "String"
     
 # Muestra las opciones de tipos de datos que permito usar
@@ -50,7 +49,6 @@ def mostrarOpcionesCampos():
     print("╠ 1. String.")
     print("╠ 2. Integer.")
     print("╠ 3. Decimal (float).")
-    print("╠ 4. Boolean.")
     print("╚═══════════════════════════════════════════════════════════════════════════╝")
 
 # Mostramos todos los campos que haya en la variable global campos[]
@@ -60,13 +58,9 @@ def mostrarCamposDiccionario():
         print("Los campos actualmente registrados son:")
         for i, campo in enumerate(campos):
             data = campo.split(":")
-            try: # Hay que hacerlo dentro de un try porque existe la posibilidad de que el usuario haya puesto "" al nombre
-                nombreCampo = data[0]
-                tipoCampo = data[1]
-            except IndexError:
-                print("Error en mostrarCampoDiccionario")
-            else:
-                print(f"{i+1}. \"{nombreCampo}\" y es de tipo {tipoCampo}")
+            nombreCampo = data[0]
+            tipoCampo = data[1]
+            print(f"{i+1}. \"{nombreCampo}\" y es de tipo {tipoCampo}")
     else:
         print("No hay campos registrados.")
 
@@ -112,25 +106,53 @@ def aniadirElementoDiccionario():
     nuevo = {}
     for campo in campos:
         data = campo.split(":")
-        try: # Hay que hacerlo dentro de un try porque existe la posibilidad de que el usuario haya puesto "" (nada) al nombre
-            nombreCampo = data[0]
-            tipoCampo = data[1]
-        except IndexError:
-            print("Error en aniadirElementoDiccionario")
+        nombreCampo = data[0]
+        tipoCampo = data[1]
+        introducido = input(f"Introduce los datos para el campo \"{nombreCampo}\": ")
+        try:
+            match tipoCampo:
+                case "Integer": introducido = int(introducido)
+                case "Decimal": introducido = float(introducido)
+        except ValueError:
+            print(f"Error en la conversión a {tipoCampo}, este elemento no ha sido agregado.")
+            return
         else:
-            introducido = input(f"Introduce los datos para el campo \"{nombreCampo}\": ")
-            try:
-                match tipoCampo:
-                    case "Integer": introducido = int(introducido)
-                    case "Boolean": introducido = bool(introducido) # bool == Boolean
-                    case "Decimal": introducido = float(introducido)
-            except ValueError:
-                print(f"Error en la conversión a {tipoCampo}, este elemento no ha sido agregado.")
-                return
-            else:
-                nuevo[nombreCampo] = introducido
+            nuevo[nombreCampo] = introducido
     diccionarios.append(nuevo)
     print("Elemento agreado con éxito!")
+
+#############################################################################
+#
+#           APARTADO 4: Buscar elementos por un campo.
+#
+#############################################################################
+
+# Buscamos elementos por un campo, la idea es mostrar al usuario un menú con los campos que puede elegir y buscar según el campo elegido
+def buscarElementosPorUnCampo():
+    global campos
+    if len(campos) == 0:
+        print("No se puede buscar elementos por un campo porque no hay campos. Crea un campo nuevo con la opción 1.")
+        return
+    
+    mostrarCamposEnMenu()
+    opt = obtenerOpcion(1,len(campos))
+    data = campos[opt-1].split(":")
+    nombreCampo = data[0]
+    buscar = input("Introduce el contenido a buscar: ")
+    mostrarElementoEncontrado(buscar, nombreCampo)
+
+# Mostramos unicamente el diccionario en el que su nombreCampo (en caso de contenerlo) sea igual a buscar
+def mostrarElementoEncontrado(buscar, nombreCampo):
+    global diccionarios
+    print(f"Los diccionarios que son igual a \"{buscar}\" en su campo \"{nombreCampo}\" son:")
+    cnt = 0
+    for diccionario in diccionarios:
+        try:
+            if str(diccionario[nombreCampo]) == buscar:
+                print(diccionario)
+                cnt+=1
+        except KeyError: # Debemos usar el except porque existe la posibilidad de que el usuario haya agregado un campo nuevo después de hacer algún registro
+            continue
 
 #############################################################################
 #
@@ -155,6 +177,17 @@ def mostrarMenuPrincipal():
     print("╠ 12. Exportar los resultados.")
     print("╠ 13. Salir de la aplicación.")
     print("╚══════════════════════════════════════════════════════════════════════════════════════╝")
+
+# Aquí no compruebo si hay elementos o no en el Array ya que lo compruebo justo antes de llamarlo
+# Lo que hace es mostrar en forma de menú los campos que hay y su tipo de dato
+def mostrarCamposEnMenu(): 
+    print("╔═══════════════════════════════════ Campos Actuales ═══════════════════════════════════╗")
+    for i, campo in enumerate(campos):
+        data = campo.split(":")
+        nombreCampo = data[0]
+        tipoCampo = data[1]
+        print(f"╠ {i+1}. \"{nombreCampo}\" de tipo {tipoCampo}")
+    print("╚═══════════════════════════════════════════════════════════════════════════════════════╝")
 
 # Obtenemos la opción elegida por el usuario siempre y cuando esté entre el mínimo y el máximo
 def obtenerOpcion(min,max):
@@ -182,7 +215,7 @@ def init():
             case 1: initCrearCamposDiccionario()
             case 2: mostrarDatosDiccionario()
             case 3: aniadirElementoDiccionario()
-            case 4: print("opcion 4")
+            case 4: buscarElementosPorUnCampo()
             case 5: print("opcion 5")
             case 6: print("opcion 6")
             case 7: print("opcion 7")
