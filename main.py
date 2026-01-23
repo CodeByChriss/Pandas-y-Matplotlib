@@ -131,7 +131,7 @@ def aniadirElementoDiccionario():
 def buscarElementosPorUnCampo():
     global campos
     if len(campos) == 0:
-        print("No se puede buscar elementos por un campo porque no hay campos. Crea un campo nuevo con la opción 1.")
+        print("No se puede buscar elementos por un campo porque no hay campos. Crea un nuevo campo con la opción 1.")
         return
     
     mostrarCamposEnMenu()
@@ -156,6 +156,82 @@ def mostrarElementoEncontrado(buscar, nombreCampo):
 
 #############################################################################
 #
+#           APARTADO 5: Calcular estadísticas.
+#
+#############################################################################
+
+# Calculamos estadísticas de un campo
+def calcularEstadisticas():
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede calcular ninguna estadística porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede calcular ninguna estadística porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+
+    mostrarMenuEstadisticas()
+    opt = obtenerOpcion(1,4)
+    mostrarCamposDiccionario()
+    optCampo = obtenerOpcion(1,len(campos))
+    data = campos[optCampo-1].split(":")
+    nombreCampo = data[0]
+    tipoCampo = data[1]
+    match opt:
+        case 1: # Media
+            if tipoCampo != "Integer" and tipoCampo != "Decimal":
+                print("No se puede hacer la media de un campo que no es numérico.")
+                return
+            else:
+                obtenerMedia(nombreCampo)
+        case 2: # Máximo
+            if tipoCampo != "Integer" and tipoCampo != "Decimal":
+                print("No se puede obtener el máximo de un campo que no es numérico.")
+                return
+            else:
+                obtenerMaximo(nombreCampo)
+        case 3: # Mínimo
+            if tipoCampo != "Integer" and tipoCampo != "Decimal":
+                print("No se puede obtener el mínimo de un campo que no es numérico.")
+                return
+            else:
+                obtenerMinimo(nombreCampo)
+        case 4: # Recuento
+            buscar = input("Introduce el dato a buscar: ")
+            obtenerRecuento(nombreCampo,buscar)
+
+def obtenerMedia(nombreCampo):
+    pass
+
+def obtenerMaximo(nombreCampo):
+    pass
+
+def obtenerMinimo(nombreCampo):
+    pass
+
+# Mostramos la cantidad de diccionarios que en su campo <nombreCampo> tienen el valor <buscar>
+def obtenerRecuento(nombreCampo,buscar):
+    global diccionarios
+    cnt = 0
+    for diccionario in diccionarios:
+        try:
+            if str(diccionario[nombreCampo]) == buscar:
+                cnt+=1
+        except KeyError: # Debemos usar el except porque existe la posibilidad de que el usuario haya agregado un campo nuevo después de hacer algún registro
+            continue
+    print(f"La cantidad de diccionarios que en su campo \"{nombreCampo}\" es igual a \"{buscar}\" es de: {cnt}")
+
+# Mostramos las opciones que se le dan al usuario para calcular las estadísticas
+def mostrarMenuEstadisticas():
+    print("╔═════════════════ Menú Estadísticas ═════════════════╗")
+    print("╠ 1. Media.")
+    print("╠ 2. Máximo.")
+    print("╠ 3. Mínimo.")
+    print("╠ 4. Recuento.")
+    print("╚═════════════════════════════════════════════════════╝")
+
+#############################################################################
+#
 #                           Funciones Principales
 #
 #############################################################################
@@ -163,19 +239,18 @@ def mostrarElementoEncontrado(buscar, nombreCampo):
 # Muestra por terminal el Menú Principal de la aplicación
 def mostrarMenuPrincipal():
     print("╔═══════════════════════════════════ Menú Principal ═══════════════════════════════════╗")
-    print("╠ 1. Crear los campos del diccionario.")
+    print("╠ 1. Crear y ver los campos del diccionario.")
     print("╠ 2. Mostrar los datos del diccionario.")
     print("╠ 3. Añadir un nuevo elemento al diccionario.")
     print("╠ 4. Buscar elementos por un campo.")
     print("╠ 5. Calcular estadísticas.")
     print("╠ 6. Filtrar elementos por campo.")
     print("╠ 7. Generar top N (solo para campos numéricos).")
-    print("╠ 8. Buscar elementos por un campo.")
-    print("╠ 9. Añadir columnas nuevas con estadísticas o cálculos sobre los datos.")
-    print("╠ 10. Aplicar filtros y agrupaciones.")
-    print("╠ 11. Generar 3 tipos de gráficos..")
-    print("╠ 12. Exportar los resultados.")
-    print("╠ 13. Salir de la aplicación.")
+    print("╠ 8. Añadir columnas nuevas con estadísticas o cálculos sobre los datos.")
+    print("╠ 9. Aplicar filtros y agrupaciones.")
+    print("╠ 10. Generar 3 tipos de gráficos..")
+    print("╠ 11. Exportar los resultados.")
+    print("╠ 12. Salir de la aplicación.")
     print("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
 # Aquí no compruebo si hay elementos o no en el Array ya que lo compruebo justo antes de llamarlo
@@ -208,23 +283,22 @@ def obtenerOpcion(min,max):
 # Método principal que llama a mostrar el menú y recoge la respuesta
 def init():
     opt = 0
-    while opt != 13: # Mientras que la opción elegida por el usuario sea distinta a la opción de salir
+    while opt != 12: # Mientras que la opción elegida por el usuario sea distinta a la opción de salir
         mostrarMenuPrincipal()
-        opt = obtenerOpcion(1,13)
+        opt = obtenerOpcion(1,12)
         match opt:
             case 1: initCrearCamposDiccionario()
             case 2: mostrarDatosDiccionario()
             case 3: aniadirElementoDiccionario()
             case 4: buscarElementosPorUnCampo()
-            case 5: print("opcion 5")
+            case 5: calcularEstadisticas()
             case 6: print("opcion 6")
             case 7: print("opcion 7")
-            case 8: print("opcion 8")
-            case 9: print("opcion 9")
-            case 10: print("opcion 10")
-            case 11: print("opcion 11")
-            case 12: print("opcion 12")
-            case 13 : print("¡Hasta pronto!")
+            case 8: print("opcion 9")
+            case 9: print("opcion 10")
+            case 10: print("opcion 11")
+            case 11: print("opcion 12")
+            case 12 : print("¡Hasta pronto!")
 
     print("Programa finalizado.")
 
