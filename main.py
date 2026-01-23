@@ -60,7 +60,7 @@ def mostrarCamposDiccionario():
         print("Los campos actualmente registrados son:")
         for i, campo in enumerate(campos):
             data = campo.split(":")
-            try:
+            try: # Hay que hacerlo dentro de un try porque existe la posibilidad de que el usuario haya puesto "" al nombre
                 nombreCampo = data[0]
                 tipoCampo = data[1]
             except IndexError:
@@ -80,6 +80,60 @@ def mostrarMenuCrearCamposDiccionario():
 
 #############################################################################
 #
+#           APARTADO 2: Mostrar los datos del diccionario.
+#
+#############################################################################
+
+# Mostramos los registros que haya en nuestro diccionario
+def mostrarDatosDiccionario():
+    global diccionarios, campos
+    if len(diccionarios) > 0:
+        for diccionario in diccionarios:
+            print(diccionario)
+    else:
+        msg = " Usa la opción número 1 para agregar campos nuevos."
+        if len(campos) > 0:
+            msg = " Usa la opción número 3 para agregar nuevos elementos al diccionario."
+        print(f"Actualmente el diccionario está vacío.{msg}")
+
+#############################################################################
+#
+#           APARTADO 3: Añadir un nuevo elemento al diccionario.
+#
+#############################################################################
+
+# Solicitamos datos para cada campo que el usuario ha registrado
+def aniadirElementoDiccionario():
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("Antes de agregar elementos, debes agregar campos nuevos.")
+        return
+    
+    nuevo = {}
+    for campo in campos:
+        data = campo.split(":")
+        try: # Hay que hacerlo dentro de un try porque existe la posibilidad de que el usuario haya puesto "" (nada) al nombre
+            nombreCampo = data[0]
+            tipoCampo = data[1]
+        except IndexError:
+            print("Error en aniadirElementoDiccionario")
+        else:
+            introducido = input(f"Introduce los datos para el campo \"{nombreCampo}\": ")
+            try:
+                match tipoCampo:
+                    case "Integer": introducido = int(introducido)
+                    case "Boolean": introducido = bool(introducido) # bool == Boolean
+                    case "Decimal": introducido = float(introducido)
+            except ValueError:
+                print(f"Error en la conversión a {tipoCampo}, este elemento no ha sido agregado.")
+                return
+            else:
+                nuevo[nombreCampo] = introducido
+    diccionarios.append(nuevo)
+    print("Elemento agreado con éxito!")
+
+#############################################################################
+#
 #                           Funciones Principales
 #
 #############################################################################
@@ -87,7 +141,7 @@ def mostrarMenuCrearCamposDiccionario():
 # Muestra por terminal el Menú Principal de la aplicación
 def mostrarMenuPrincipal():
     print("╔═══════════════════════════════════ Menú Principal ═══════════════════════════════════╗")
-    print("╠ 1. Crear los campos del diccionario.") # función initCrearCamposDiccionario()
+    print("╠ 1. Crear los campos del diccionario.")
     print("╠ 2. Mostrar los datos del diccionario.")
     print("╠ 3. Añadir un nuevo elemento al diccionario.")
     print("╠ 4. Buscar elementos por un campo.")
@@ -126,8 +180,8 @@ def init():
         opt = obtenerOpcion(1,13)
         match opt:
             case 1: initCrearCamposDiccionario()
-            case 2: print("opcion 2")
-            case 3: print("opcion 3")
+            case 2: mostrarDatosDiccionario()
+            case 3: aniadirElementoDiccionario()
             case 4: print("opcion 4")
             case 5: print("opcion 5")
             case 6: print("opcion 6")
