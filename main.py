@@ -204,10 +204,14 @@ def obtenerMedia(nombreCampo):
     pass
 
 def obtenerMaximo(nombreCampo):
-    pass
+    global diccionarios
+    diccionario = mi_max(diccionarios, nombreCampo)
+    print(f"El diccionario con el campo \"{nombreCampo}\" que es el máximo es: {diccionario}")
 
 def obtenerMinimo(nombreCampo):
-    pass
+    global diccionarios
+    diccionario = mi_min(diccionarios, nombreCampo)
+    print(f"El diccionario con el campo \"{nombreCampo}\" que es el mínimo es: {diccionario}")
 
 # Mostramos la cantidad de diccionarios que en su campo <nombreCampo> tienen el valor <buscar>
 def obtenerRecuento(nombreCampo,buscar):
@@ -235,6 +239,40 @@ def mostrarMenuEstadisticas():
 #                           Funciones Principales
 #
 #############################################################################
+
+# Como existe la posibilidad de que el usuario haya creado nuevos campos después de registrar algún elemento no puedo usar max() porque puede dar error al intentar acceder a un campo que no existe
+def mi_max(lista, nombreCampo):
+    # Filtramos la lista que recibimos y nos quedamos unicamente con las entradas del diccionario que tienen el campo que nos pasan
+    listaCorrecta = []
+    excluidos = 0
+    for entrada in lista:
+        try:
+            data = entrada[nombreCampo]
+        except KeyError:
+            excluidos+=1
+            continue
+        else:
+            listaCorrecta.append(entrada)
+    print(f"Se han excluido un total de {excluidos} diccionarios por no tener el campo deseado.")
+    # Una vez filtrado, si que podemos usar max() sin problema
+    return max(listaCorrecta, key=lambda x: x[nombreCampo])
+
+# Como existe la posibilidad de que el usuario haya creado nuevos campos después de registrar algún elemento no puedo usar min() porque puede dar error al intentar acceder a un campo que no existe
+def mi_min(lista, nombreCampo):
+    # Filtramos la lista que recibimos y nos quedamos unicamente con las entradas del diccionario que tienen el campo que nos pasan
+    listaCorrecta = []
+    excluidos = 0
+    for entrada in lista:
+        try:
+            data = entrada[nombreCampo]
+        except KeyError:
+            excluidos+=1
+            continue
+        else:
+            listaCorrecta.append(entrada)
+    print(f"Se han excluido un total de {excluidos} diccionarios por no tener el campo deseado.")
+    # Una vez filtrado, si que podemos usar min() sin problema
+    return min(listaCorrecta, key=lambda x: x[nombreCampo])
 
 # Muestra por terminal el Menú Principal de la aplicación
 def mostrarMenuPrincipal():
