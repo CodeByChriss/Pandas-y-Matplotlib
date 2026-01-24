@@ -9,7 +9,7 @@ diccionarios = [] # array que va a contener los diccionarios
 
 #############################################################################
 #
-#           APARTADO 1: Crear los campos del diccionario.
+#               APARTADO 1: Crear los campos del diccionario.
 #
 #############################################################################
 
@@ -123,7 +123,7 @@ def aniadirElementoDiccionario():
 
 #############################################################################
 #
-#           APARTADO 4: Buscar elementos por un campo.
+#               PARTADO 4: Buscar elementos por un campo.
 #
 #############################################################################
 
@@ -156,7 +156,7 @@ def mostrarElementoEncontrado(buscar, nombreCampo):
 
 #############################################################################
 #
-#           APARTADO 5: Calcular estadísticas.
+#                   APARTADO 5: Calcular estadísticas.
 #
 #############################################################################
 
@@ -243,9 +243,81 @@ def mostrarMenuEstadisticas():
 
 #############################################################################
 #
-#           APARTADO 6: Filtrar elementos por campo.
+#               APARTADO 6: Filtrar elementos según condición.
 #
 #############################################################################
+
+# Ofrecemos al usuario varias opciones para filtrar dependiendo de si el campo es de tipo String o numérico (Integer o Decimal)
+def filtrarElementosCondicion():
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede calcular ninguna estadística porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede calcular ninguna estadística porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+    
+    mostrarCamposEnMenu()
+    opt = obtenerOpcion(1, len(campos))
+    data = campos[opt-1].split(":")
+    nombreCampo = data[0]
+    tipoCampo = data[1]
+    buscar = input(f"Dime el dato a buscar en el campo \"{nombreCampo}\": ")
+    if tipoCampo == "String":
+        mostrarFiltrosStringMenu()
+        opt = obtenerOpcion(1,2)
+    else:
+        mostrarFiltrosNumericosMenu()
+        opt = obtenerOpcion(1,3)
+
+    mostrarElementosFiltrados(obtenerListaConEntradaQueTenganCampo(diccionarios, nombreCampo), buscar, nombreCampo, tipoCampo, opt)
+
+# Mostramos los filtros que 
+def mostrarFiltrosStringMenu():
+    print("╔═══════════════ Filtros para Strings ════════════════╗")
+    print("╠ 1. Que sea igual.")
+    print("╠ 2. Que lo contenga.")
+    print("╚═════════════════════════════════════════════════════╝")
+
+def mostrarFiltrosNumericosMenu():
+    print("╔═══════════ Filtros para Integer y Decimal ═══════════╗")
+    print("╠ 1. Que sea mayor.")
+    print("╠ 2. Que sea menos.")
+    print("╠ 3. Que sea igual.")
+    print("╚══════════════════════════════════════════════════════╝")
+
+# Unicamente vamos a mostrar los elementos que cumplan las condiciones seleccionadas por el usuario
+def mostrarElementosFiltrados(lista, buscar, nombreCampo, tipoCampo, tipoFiltro):
+    # Primero comprobamos si tipo de campo es numérico y si el dato a buscar es un número
+    buscarNum = 0
+    if tipoCampo != "String":
+        try:
+            buscarNum = int(buscar) if tipoCampo == "Integer" else float(buscar)
+        except ValueError:
+            print("El campo en el que estas intentando filtrar es numérico pero el dato introducido no lo es.")
+            return
+
+    cnt = 0
+    print("Las entradas que cumplen con el filtro son:")
+    for entrada in lista:
+        dato = entrada[nombreCampo]
+        if tipoCampo == "String":
+            if tipoFiltro == 1 and dato == buscar:
+                cnt += 1
+                print(f"{cnt}. {entrada}")
+            elif buscar in dato: # si dato contiene buscar
+                cnt += 1
+                print(f"{cnt}. {entrada}")
+        else:
+            if tipoFiltro == 1 and dato > buscarNum:
+                cnt += 1
+                print(f"{cnt}. {entrada}")
+            elif tipoFiltro == 2 and dato < buscarNum:
+                cnt += 1
+                print(f"{cnt}. {entrada}")
+            elif dato == buscarNum:
+                cnt += 1
+                print(f"{cnt}. {entrada}")
 
 #############################################################################
 #
@@ -253,27 +325,27 @@ def mostrarMenuEstadisticas():
 #
 #############################################################################
 
+##################################################################################
+#
+# APARTADO 8: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
+#
+##################################################################################
+
 #############################################################################
 #
-#           APARTADO 8: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
+#               APARTADO 9: Aplicar filtros y agrupaciones.
 #
 #############################################################################
 
 #############################################################################
 #
-#           APARTADO 9: Aplicar filtros y agrupaciones.
+#               APARTADO 10: Generar 3 tipos de gráficos.
 #
 #############################################################################
 
 #############################################################################
 #
-#           APARTADO 10: Generar 3 tipos de gráficos.
-#
-#############################################################################
-
-#############################################################################
-#
-#           APARTADO 11: Exportar los resultados.
+#               APARTADO 11: Exportar los resultados.
 #
 #############################################################################
 
@@ -306,7 +378,7 @@ def mostrarMenuPrincipal():
     print("╠ 3. Añadir un nuevo elemento al diccionario.")
     print("╠ 4. Buscar elementos por un campo.")
     print("╠ 5. Calcular estadísticas.")
-    print("╠ 6. Filtrar elementos por campo.")
+    print("╠ 6. Filtrar elementos según condición.")
     print("╠ 7. Generar top N (solo para campos numéricos).")
     print("╠ 8. Añadir columnas nuevas con estadísticas o cálculos sobre los datos.")
     print("╠ 9. Aplicar filtros y agrupaciones.")
@@ -354,7 +426,7 @@ def init():
             case 3: aniadirElementoDiccionario()
             case 4: buscarElementosPorUnCampo()
             case 5: calcularEstadisticas()
-            case 6: print("opcion 6")
+            case 6: filtrarElementosCondicion()
             case 7: print("opcion 7")
             case 8: print("opcion 9")
             case 9: print("opcion 10")
