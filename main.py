@@ -84,6 +84,7 @@ def mostrarDatosDiccionario():
     if len(diccionarios) > 0:
         for diccionario in diccionarios:
             print(diccionario)
+        print(f"Actualmente hay un total de {len(diccionarios)} elementos.")
     else:
         msg = " Usa la opción número 1 para agregar campos nuevos."
         if len(campos) > 0:
@@ -368,6 +369,7 @@ def generarTopN():
 
 # Le mostramos al usuario un menú en el que están las opcinoes de ficheros que ofrecemos, preguntamos por el nombre del archivo y leemos el fichero
 def cargarArchivo():
+    global diccionarios, campos
     mostrarMenuTiposArchivos()
     opt = obtenerOpcion(1,2)
     nombreArchivo = input("Introduce el nombre del archivo (sin la extensión): ")
@@ -380,9 +382,28 @@ def cargarArchivo():
         print("No se ha podido encontrar el fichero, puede ser que no se llame como has indicado. Operación cancelada.")
         return
     else:
-        primero = df.iloc[0]
-        for i, d in enumerate(df):
-            print(f"{i}. {primero[d]} -> {type(primero[d])}")
+        # Agregamos los campos a campos[] para que el usuario pueda modificarlos y verlos luego
+        primeraFila = df.iloc[0]
+        agregados = 0
+        for campo in df:
+            agregados+=1
+            tipoDeDato = str(type(primeraFila[campo]))
+            if "int" in tipoDeDato: # Si "int" o "float" o "str" esta en <class 'numpy.int64'> o <class 'numpy.float64'> o <class 'str'>
+                campos.append(f"{campo}:Integer")
+            elif "float" in tipoDeDato:
+                campos.append(f"{campo}:Decimal")
+            else:
+                campos.append(f"{campo}:String")
+        print(f"Se han agregado un total de {agregados} campos.")
+        # Agregamos todas las filas (el contenido del fichero) a diccionarios
+        agregados = 0
+        for i, row in df.iterrows(): # recorremos cada fila del fichero
+            nuevoDiccionario = {}
+            for campo in df: # recorremos cada campo que hay en el fichero por cada fila del mismo
+                nuevoDiccionario[campo] = row[campo]
+            diccionarios.append(nuevoDiccionario)
+            agregados+=1
+        print(f"Se han agregado un total de {agregados} elementos al diccionario.")
 
 # Muestra en forma de menú las opciones de ficheros que el usuario tiene para elegir
 def mostrarMenuTiposArchivos():
