@@ -360,27 +360,33 @@ def generarTopN():
     else:
         print("No existen campos numéricos. Puedes agregar uno nuevo con la opción 1.")
 
+#############################################################################
+#
+#               APARTADO 8: Cargar archivo XLSX o CSV.
+#
+#############################################################################
+
 ############################################################################################################################
 #
-#                   APARTADO 8: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
+#                   APARTADO 9: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
 #
 ############################################################################################################################
 
 #############################################################################
 #
-#               APARTADO 9: Aplicar filtros y agrupaciones.
+#               APARTADO 10: Aplicar filtros y agrupaciones.
 #
 #############################################################################
 
 #############################################################################
 #
-#               APARTADO 10: Generar 3 tipos de gráficos.
+#               APARTADO 11: Generar 3 tipos de gráficos.
 #
 #############################################################################
 
 #############################################################################
 #
-#               APARTADO 11: Exportar los resultados.
+#               APARTADO 12: Exportar los resultados.
 #
 #############################################################################
 
@@ -415,11 +421,12 @@ def mostrarMenuPrincipal():
     print("╠ 5. Calcular estadísticas.")
     print("╠ 6. Filtrar elementos según condición.")
     print("╠ 7. Generar top N (solo para campos numéricos).")
-    print("╠ 8. Añadir columnas nuevas con estadísticas o cálculos sobre los datos.")
-    print("╠ 9. Aplicar filtros y agrupaciones.")
-    print("╠ 10. Generar 3 tipos de gráficos.")
-    print("╠ 11. Exportar los resultados.")
-    print("╠ 12. Salir de la aplicación.")
+    print("╠ 8. Cargar archivo XLSX o CSV.")
+    print("╠ 9. Añadir columnas nuevas con estadísticas o cálculos sobre los datos.")
+    print("╠ 10. Aplicar filtros y agrupaciones.")
+    print("╠ 11. Generar 3 tipos de gráficos.")
+    print("╠ 12. Exportar los resultados.")
+    print("╠ 13. Salir de la aplicación.")
     print("╚══════════════════════════════════════════════════════════════════════════════════════╝")
 
 # Aquí no compruebo si hay elementos o no en el Array ya que lo compruebo justo antes de llamarlo
@@ -480,9 +487,9 @@ def obtenerOpcion(min,max):
 # Método principal que llama a mostrar el menú y recoge la respuesta
 def init():
     opt = 0
-    while opt != 12: # Mientras que la opción elegida por el usuario sea distinta a la opción de salir
+    while opt != 13: # Mientras que la opción elegida por el usuario sea distinta a la opción de salir
         mostrarMenuPrincipal()
-        opt = obtenerOpcion(1,12)
+        opt = obtenerOpcion(1,13)
         match opt:
             case 1: initCrearCamposDiccionario()
             case 2: mostrarDatosDiccionario()
@@ -491,11 +498,12 @@ def init():
             case 5: calcularEstadisticas()
             case 6: filtrarElementosCondicion()
             case 7: generarTopN()
-            case 8: print("opcion 9")
-            case 9: print("opcion 10")
-            case 10: print("opcion 11")
-            case 11: print("opcion 12")
-            case 12 : print("¡Hasta pronto!")
+            case 8: print("opcion 8")
+            case 9: print("opcion 9")
+            case 10: print("opcion 10")
+            case 11: print("opcion 11")
+            case 12: print("opcion 12")
+            case 13 : print("¡Hasta pronto!")
 
     print("Programa finalizado.")
 
