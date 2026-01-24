@@ -380,9 +380,9 @@ def cargarArchivo():
         print("No se ha podido encontrar el fichero, puede ser que no se llame como has indicado. Operación cancelada.")
         return
     else:
+        primero = df.iloc[0]
         for i, d in enumerate(df):
-            print(f"{i}. {d}")
-        print(df.dtypes)
+            print(f"{i}. {primero[d]} -> {type(primero[d])}")
 
 # Muestra en forma de menú las opciones de ficheros que el usuario tiene para elegir
 def mostrarMenuTiposArchivos():
