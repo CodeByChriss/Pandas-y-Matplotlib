@@ -272,13 +272,14 @@ def filtrarElementosCondicion():
 
     mostrarElementosFiltrados(obtenerListaConEntradaQueTenganCampo(diccionarios, nombreCampo), buscar, nombreCampo, tipoCampo, opt)
 
-# Mostramos los filtros que 
+# Mostramos los filtros que el usuario va a poder usar para el tipo de dato String
 def mostrarFiltrosStringMenu():
     print("╔═══════════════ Filtros para Strings ════════════════╗")
     print("╠ 1. Que sea igual.")
     print("╠ 2. Que lo contenga.")
     print("╚═════════════════════════════════════════════════════╝")
 
+# Mostramos los filtros que el usuario va a poder usar para el tipo de dato Integer y Decimal (Float)
 def mostrarFiltrosNumericosMenu():
     print("╔═══════════ Filtros para Integer y Decimal ═══════════╗")
     print("╠ 1. Que sea mayor.")
@@ -325,11 +326,45 @@ def mostrarElementosFiltrados(lista, buscar, nombreCampo, tipoCampo, tipoFiltro)
 #
 #############################################################################
 
-##################################################################################
+# Generamos y mostramos el top N dependiendo de lo que el usuario elija y nos diga
+def generarTopN():
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede calcular ninguna estadística porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede calcular ninguna estadística porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+    
+    correcto, cnt = mostrarCamposNumericosEnMenu()
+    if correcto:
+        opt = obtenerOpcion(1,cnt)
+        data = obtenerCampoNumeroEnCampos(opt).split(":")
+        nombreCampo = data[0]
+        try:
+            n = int(input("Dime la cantidad que quieres que sea el top: "))
+            reverse = input(f"Quieres que sea de forma ascendente (el top 1 será el que más tiene del campo \"{nombreCampo}\") [y/n]: ")
+        except ValueError:
+            print("Debes introducir un número. Operación cancelada.")
+            return
+        else:
+            lista = sorted(obtenerListaConEntradaQueTenganCampo(diccionarios, nombreCampo), key=lambda x: x[nombreCampo], reverse=True if reverse == 'y' or reverse == 'Y' else False)[:n]
+            if len(lista) > 0:
+                # Mostramos el top N
+                print(f"╔═══════════════════════════════════ Top {n} por el campo \"{nombreCampo}\" ═══════════════════════════════════")
+                for i, entrada in enumerate(lista):
+                    print(f"╠ {i+1}. {entrada}")
+                print("╚═══════════════════════════════════════════════════════════════════════════════════════════════════")
+            else:
+                print(f"No existen registros con el campo \"{nombreCampo}\"")
+    else:
+        print("No existen campos numéricos. Puedes agregar uno nuevo con la opción 1.")
+
+############################################################################################################################
 #
-# APARTADO 8: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
+#                   APARTADO 8: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
 #
-##################################################################################
+############################################################################################################################
 
 #############################################################################
 #
@@ -398,6 +433,34 @@ def mostrarCamposEnMenu():
         print(f"╠ {i+1}. \"{nombreCampo}\" de tipo {tipoCampo}")
     print("╚═══════════════════════════════════════════════════════════════════════════════════════╝")
 
+# Mostramos unicamente los campos numéricos que hay en el menú
+def mostrarCamposNumericosEnMenu():
+    cnt = 0
+    print("╔═══════════════════════════════════ Campos Numéricos Actuales ═══════════════════════════════════╗")
+    for campo in campos:
+        data = campo.split(":")
+        tipoCampo = data[1]
+        if tipoCampo != "String":
+            nombreCampo = data[0]
+            cnt += 1
+            print(f"╠ {cnt}. \"{nombreCampo}\" de tipo {tipoCampo}")
+    print("╚═══════════════════════════════════════════════════════════════════════════════════════╝")
+
+    return (True if cnt > 0 else False,cnt) # si no hay campos numéricos devuelvo un False para que no se siga con el proceso
+
+# En la función generarTopN() de la opción 7 unicamente queremos los campos numéricos por lo que debemos recorrer campos[] en busca del campo numérico que se corresponda con el número que se ha mostrado en mostrarCamposNumericosEnMenu()
+def obtenerCampoNumeroEnCampos(index):
+    global campos
+    cnt = 0
+    for campo in campos:
+        data = campo.split(":")
+        tipoCampo = data[1]
+        if tipoCampo != "String":
+            cnt += 1
+            if cnt == index:
+                return campo
+    return "ERROR:ERROR"
+
 # Obtenemos la opción elegida por el usuario siempre y cuando esté entre el mínimo y el máximo
 def obtenerOpcion(min,max):
     opt = min-1
@@ -427,7 +490,7 @@ def init():
             case 4: buscarElementosPorUnCampo()
             case 5: calcularEstadisticas()
             case 6: filtrarElementosCondicion()
-            case 7: print("opcion 7")
+            case 7: generarTopN()
             case 8: print("opcion 9")
             case 9: print("opcion 10")
             case 10: print("opcion 11")
