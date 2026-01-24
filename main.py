@@ -366,6 +366,31 @@ def generarTopN():
 #
 #############################################################################
 
+# Le mostramos al usuario un menú en el que están las opcinoes de ficheros que ofrecemos, preguntamos por el nombre del archivo y leemos el fichero
+def cargarArchivo():
+    mostrarMenuTiposArchivos()
+    opt = obtenerOpcion(1,2)
+    nombreArchivo = input("Introduce el nombre del archivo (sin la extensión): ")
+    try:
+        if opt == 1:
+            df = pd.read_excel(f"{nombreArchivo}.xlsx")
+        else:
+            df = pd.read_csv(f"{nombreArchivo}.csv")
+    except FileNotFoundError:
+        print("No se ha podido encontrar el fichero, puede ser que no se llame como has indicado. Operación cancelada.")
+        return
+    else:
+        for i, d in enumerate(df):
+            print(f"{i}. {d}")
+        print(df.dtypes)
+
+# Muestra en forma de menú las opciones de ficheros que el usuario tiene para elegir
+def mostrarMenuTiposArchivos():
+    print("╔══════════ Tipos de archivos disponibles ═════════╗")
+    print("╠ 1. .xlsx")
+    print("╠ 2. .csv")
+    print("╚══════════════════════════════════════════════════╝")
+
 ############################################################################################################################
 #
 #                   APARTADO 9: Añadir columnas nuevas con estadísticas o cálculos sobre los datos.
@@ -498,7 +523,7 @@ def init():
             case 5: calcularEstadisticas()
             case 6: filtrarElementosCondicion()
             case 7: generarTopN()
-            case 8: print("opcion 8")
+            case 8: cargarArchivo()
             case 9: print("opcion 9")
             case 10: print("opcion 10")
             case 11: print("opcion 11")
