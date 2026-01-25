@@ -252,10 +252,10 @@ def mostrarMenuEstadisticas():
 def filtrarElementosCondicion():
     global diccionarios, campos
     if len(campos) == 0:
-        print("No se puede calcular ninguna estadística porque no hay campos. Crea un nuevo campo con la opción 1.")
+        print("No se puede filtrar porque no hay campos. Crea un nuevo campo con la opción 1.")
         return
     if len(diccionarios) == 0:
-        print("No se puede calcular ninguna estadística porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        print("No se puede filtrar porque no hay elementos. Registra un nuevo elemento con la opción 3.")
         return
     
     mostrarCamposEnMenu()
@@ -331,10 +331,10 @@ def mostrarElementosFiltrados(lista, buscar, nombreCampo, tipoCampo, tipoFiltro)
 def generarTopN():
     global diccionarios, campos
     if len(campos) == 0:
-        print("No se puede calcular ninguna estadística porque no hay campos. Crea un nuevo campo con la opción 1.")
+        print("No se puede generar el top N porque no hay campos. Crea un nuevo campo con la opción 1.")
         return
     if len(diccionarios) == 0:
-        print("No se puede calcular ninguna estadística porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        print("No se puede generar el top N porque no hay elementos. Registra un nuevo elemento con la opción 3.")
         return
     
     correcto, cnt = mostrarCamposNumericosEnMenu()
@@ -367,7 +367,7 @@ def generarTopN():
 #
 #############################################################################
 
-# Le mostramos al usuario un menú en el que están las opcinoes de ficheros que ofrecemos, preguntamos por el nombre del archivo y leemos el fichero
+# Le mostramos al usuario un menú en el que están las opciones de ficheros que ofrecemos, preguntamos por el nombre del archivo y leemos el fichero
 def cargarArchivo():
     global diccionarios, campos
     mostrarMenuTiposArchivos()
@@ -382,7 +382,7 @@ def cargarArchivo():
         print("No se ha podido encontrar el fichero, puede ser que no se llame como has indicado. Operación cancelada.")
         return
     else:
-        # Agregamos los campos a campos[] para que el usuario pueda modificarlos y verlos luego
+        # Agregamos los campos del fichero a campos[] para que el usuario pueda modificarlos y verlos luego
         primeraFila = df.iloc[0]
         agregados = 0
         for campo in df:
@@ -435,6 +435,31 @@ def mostrarMenuTiposArchivos():
 #               APARTADO 12: Exportar los resultados.
 #
 #############################################################################
+
+# Le ofrecemos al usuario las opciones de ficheros en los que puede exportar y luego convertimos diccionarios[] a dataframe y lo pasamos al fichero correspondiente
+def exportarResultados():
+    # Primero, comprobamos que haya contenido porque si no vamos a crear un fichero vacío
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede exportar porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede exportar porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+    
+    # Solicitamos los datos necesarios
+    mostrarMenuTiposArchivos()
+    opt = obtenerOpcion(1,2)
+    nombre = input("Introduce el nombre que le quieres dar al fichero (no ponga la extensión): ")
+    # Pasamos nuestra lista de diccionarios a DataFrame
+    df = pd.DataFrame(diccionarios)
+    # Creamos el fichero según los datos introducidos
+    if opt == 1: # si es .xlsx
+        df.to_excel(f"{nombre}.xlsx", index=False, encoding="utf-8") # index=False para que no exporte el número de cada fila
+        print("¡Resultados exportados con éxito!")
+    else:
+        df.to_csv(f"{nombre}.csv", index=False) # index=False para que no exporte el número de cada fila
+        print("¡Resultados exportados con éxito!")
 
 #############################################################################
 #
@@ -548,7 +573,7 @@ def init():
             case 9: print("opcion 9")
             case 10: print("opcion 10")
             case 11: print("opcion 11")
-            case 12: print("opcion 12")
+            case 12: exportarResultados()
             case 13 : print("¡Hasta pronto!")
 
     print("Programa finalizado.")
