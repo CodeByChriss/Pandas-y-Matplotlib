@@ -418,6 +418,48 @@ def mostrarMenuTiposArchivos():
 #
 ############################################################################################################################
 
+def aniadirEstadisticaOCalculo():
+    # Primero, comprobamos que haya contenido porque si no vamos a crear un fichero vacío
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede realizar estadísticas o cálculos porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede realizar estadísticas o cálculos porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+    
+    mostrarMenuEstadisticasCalculos()
+    opt = obtenerOpcion(1,5)
+    # Aprovechamos la libreria pandas para no tener que recorrer fila por fila haciendo el calculo
+    df = pd.DataFrame(diccionarios) # Convertimos nuestra lista de diccionarios a DataFrame
+    try:
+        match opt:
+            case 1: # Contribución de gol (Goals scored + Assists)
+                df["Contribucion de gol"] = df["Goals scored"] + df["Assists"]
+            case 2: # Efectividad (%) (Goals scored / Shots on target)
+                df["Efectividad"] = round(df["Goals scored"] / df["Shots on target"] * 100)
+            case 3: # Puntería (%) (Goals scored / Shots on target * 100)
+                df["Punteria"] = round(df["Goals scored"] / df["Shots on target"] * 100)
+            case 4: # Cantidad de tarjetas recibidas (Yellow Cards + Red Cards)
+                df["Cantidad de tarjetas recibidas"] = df["Yellow Cards"] + df["Red Cards"]
+            case 5: # Media goles por partido (Goals scored / Games played)
+                df["Media goles por partido"] = df["Goals scored"] / df["Games played"]
+    except KeyError: # Si no se ha cargado antes del fichero va a dar error.
+        print("Ha ocurrido un error, asegúrate de haber cargar antes el fichero y que cumpla con los nombres de los campos. Operación cancelada.")
+        return
+    else:
+        diccionarios = df.to_dict() # Lo pasamos de nuevo al array de diccionarios
+        print("Operación realizada con éxito.")
+
+def mostrarMenuEstadisticasCalculos():
+    print("╔═════════════════════════ Tipos de estadísticas y cálculos ════════════════════════╗")
+    print("╠ 1. Contribución de gol (Goals scored + Assists).")
+    print("╠ 2. Efectividad (%) (Goals scored / Shots on target).")
+    print("╠ 3. Puntería (%) (Goals scored / Shots on target * 100).")
+    print("╠ 4. Cantidad de tarjetas recibidas (Yellow Cards + Red Cards).")
+    print("╠ 5. Media goles por partido (Goals scored / Games played).")
+    print("╚═══════════════════════════════════════════════════════════════════════════════════╝")
+
 #############################################################################
 #
 #               APARTADO 10: Aplicar filtros y agrupaciones.
@@ -484,7 +526,7 @@ def obtenerListaConEntradaQueTenganCampo(listaOriginal, nombreCampo):
 
 # Muestra por terminal el Menú Principal de la aplicación
 def mostrarMenuPrincipal():
-    print("╔═══════════════════════════════════ Menú Principal ═══════════════════════════════════╗")
+    print("╔════════════════════════════════════════════ Menú Principal ════════════════════════════════════════════╗")
     print("╠ 1. Crear y ver los campos del diccionario.")
     print("╠ 2. Mostrar los datos del diccionario.")
     print("╠ 3. Añadir un nuevo elemento al diccionario.")
@@ -493,12 +535,12 @@ def mostrarMenuPrincipal():
     print("╠ 6. Filtrar elementos según condición.")
     print("╠ 7. Generar top N (solo para campos numéricos).")
     print("╠ 8. Cargar archivo XLSX o CSV.")
-    print("╠ 9. Añadir columnas nuevas con estadísticas o cálculos sobre los datos.")
+    print("╠ 9. Añadir columnas nuevas con estadísticas o cálculos sobre los datos laliga_player_stats_19_20.")
     print("╠ 10. Aplicar filtros y agrupaciones.")
     print("╠ 11. Generar 3 tipos de gráficos.")
     print("╠ 12. Exportar los resultados.")
     print("╠ 13. Salir de la aplicación.")
-    print("╚══════════════════════════════════════════════════════════════════════════════════════╝")
+    print("╚════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
 
 # Aquí no compruebo si hay elementos o no en el Array ya que lo compruebo justo antes de llamarlo
 # Lo que hace es mostrar en forma de menú los campos que hay y su tipo de dato
@@ -570,7 +612,7 @@ def init():
             case 6: filtrarElementosCondicion()
             case 7: generarTopN()
             case 8: cargarArchivo()
-            case 9: print("opcion 9")
+            case 9: aniadirEstadisticaOCalculo()
             case 10: print("opcion 10")
             case 11: print("opcion 11")
             case 12: exportarResultados()
