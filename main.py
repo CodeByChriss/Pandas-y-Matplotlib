@@ -266,7 +266,7 @@ def filtrarElementosCondicion():
     buscar = input(f"Dime el dato a buscar en el campo \"{nombreCampo}\": ")
     if tipoCampo == "String":
         mostrarFiltrosStringMenu()
-        opt = obtenerOpcion(1,2)
+        opt = obtenerOpcion(1,4)
     else:
         mostrarFiltrosNumericosMenu()
         opt = obtenerOpcion(1,3)
@@ -278,6 +278,8 @@ def mostrarFiltrosStringMenu():
     print("╔═══════════════ Filtros para Strings ════════════════╗")
     print("╠ 1. Que sea igual.")
     print("╠ 2. Que lo contenga.")
+    print("╠ 3. Que sea diferente.")
+    print("╠ 4. Que no lo contenga.")
     print("╚═════════════════════════════════════════════════════╝")
 
 # Mostramos los filtros que el usuario va a poder usar para el tipo de dato Integer y Decimal (Float)
@@ -304,10 +306,16 @@ def mostrarElementosFiltrados(lista, buscar, nombreCampo, tipoCampo, tipoFiltro)
     for entrada in lista:
         dato = entrada[nombreCampo]
         if tipoCampo == "String":
-            if tipoFiltro == 1 and dato == buscar:
+            if tipoFiltro == 1 and dato == buscar: # si dato es igual a buscar
                 cnt += 1
                 print(f"{cnt}. {entrada}")
-            elif buscar in dato: # si dato contiene buscar
+            elif tipoFiltro == 2 and buscar in dato: # si dato contiene buscar
+                cnt += 1
+                print(f"{cnt}. {entrada}")
+            elif tipoFiltro == 3 and buscar != dato: # si dato es diferente a buscar
+                cnt += 1
+                print(f"{cnt}. {entrada}")
+            elif not buscar in dato: # si dato no contiene buscar
                 cnt += 1
                 print(f"{cnt}. {entrada}")
         else:
@@ -418,8 +426,9 @@ def mostrarMenuTiposArchivos():
 #
 ############################################################################################################################
 
+# Recogemos algunos datos que introduzca el usuario y con eso calculamos y agregamos la columna necesaria
 def aniadirEstadisticaOCalculo():
-    # Primero, comprobamos que haya contenido porque si no vamos a crear un fichero vacío
+    # Primero comprobamos que haya contenido
     global diccionarios, campos
     if len(campos) == 0:
         print("No se puede realizar estadísticas o cálculos porque no hay campos. Crea un nuevo campo con la opción 1.")
@@ -451,6 +460,7 @@ def aniadirEstadisticaOCalculo():
         diccionarios = df.to_dict() # Lo pasamos de nuevo al array de diccionarios
         print("Operación realizada con éxito.")
 
+# Mostramos los cálculos que le ofrecemos al usuario
 def mostrarMenuEstadisticasCalculos():
     print("╔═════════════════════════ Tipos de estadísticas y cálculos ════════════════════════╗")
     print("╠ 1. Contribución de gol (Goals scored + Assists).")
@@ -465,6 +475,88 @@ def mostrarMenuEstadisticasCalculos():
 #               APARTADO 10: Aplicar filtros y agrupaciones.
 #
 #############################################################################
+
+def filtrosAgrupaciones():
+    # Primero comprobamos que haya contenido
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede realizar estadísticas o cálculos porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede realizar estadísticas o cálculos porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+    
+    # Preguntamos si quiere filtrar o agrupar
+    mostrarMenuFiltrarAgrupar()
+    opt = obtenerOpcion(1,2)
+    
+    if opt == 1: # Si quiere filtrar
+        mostrarCamposEnMenu()
+        optCampo = obtenerOpcion(1,len(campos))
+        data = campos[optCampo-1].split(":")
+        nombreCampo = data[0]
+        tipoCampo = data[1]
+        palabra = input("Dime la palabra/palabras/número/números por los que quieres filtrar: ")
+        try:
+            if tipoCampo == "Integer":
+                palabra = int(palabra)
+            elif tipoCampo == "Decimal":
+                palabra = float(palabra)
+        except ValueError:
+            print(f"No puedes filtrar el campo \"{nombreCampo}\" que es de tipo {tipoCampo} por un tipo distinto. Operación cancelada.")
+            return
+        else:
+            df = pd.DataFrame(diccionarios) # Aprovechamos la librería Pandas para no tener que estar nosotros comprobando linea por linea
+            if tipoCampo == "String":
+                mostrarFiltrosStringMenu()
+                optFiltro = obtenerOpcion(1,4)
+                if optFiltro == 1: # El usuario quiere filtrar si es igual
+                    listaFiltrada = df[df[nombreCampo] == palabra]
+                    mostrarDataFrame(listaFiltrada)
+                elif optFiltro == 2: # El usuario quiere filtrar si lo contiene
+                    listaFiltrada = df[palabra in df[nombreCampo]]
+                    mostrarDataFrame(listaFiltrada)
+                elif optFiltro == 3: # El usuario quiere filtrar si no es igual
+                    listaFiltrada = df[df[nombreCampo] != palabra]
+                    mostrarDataFrame(listaFiltrada)
+                else: # El usuario quiere filtrar si no lo contiene
+                    listaFiltrada = df[not palabra in df[nombreCampo]]
+                    mostrarDataFrame(listaFiltrada)
+            elif tipoCampo == "Integer" or tipoCampo == "Decimal":
+                mostrarFiltrosNumericosMenu()
+                optFiltro = obtenerOpcion(1,3)
+                if optFiltro == 1: # El usuario quiere filtrar si es mayor que
+                    listaFiltrada = df[df[nombreCampo] > palabra]
+                    mostrarDataFrame(listaFiltrada)
+                elif optFiltro == 2: # El usuario quiere filtrar si es menor que
+                    listaFiltrada = df[df[nombreCampo] < palabra]
+                    mostrarDataFrame(listaFiltrada)
+                else: # El usuario quiere filtrar si es igual
+                    listaFiltrada = df[df[nombreCampo] == palabra]
+                    mostrarDataFrame(listaFiltrada)
+            else:
+                print(f"Ha ocurrido un error. Operación cancelada. {nombreCampo} -- {tipoCampo}")
+                return
+    else: # Si quiere agrupar
+        todoBien, cnt = mostrarCamposNumericosEnMenu()
+        if todoBien:
+            df = pd.DataFrame(diccionarios) # Aprovechamos la librería Pandas para no tener que estar nosotros comprobando linea por linea
+            optCampo = obtenerOpcion(1,cnt)
+            data = obtenerCampoNumeroEnCampos(optCampo).split(":")
+            nombreCampo = data[0]
+            mediaEquipo = df.groupby("Team")[nombreCampo].mean() # Calculamos la media de los equipos en el campo indicado por el usuario
+            print(f"La media por equipo del campo \"{nombreCampo}\" es: {mediaEquipo}", end="\n\n")
+            mediaPosicion = df.groupby("Position")[nombreCampo].mean() # Calculamos la media por posición de jugadores del campo indicado por el usuario
+            print(f"La media por posición del campo \"{nombreCampo}\" es: {mediaPosicion}")
+        else:
+            print("No se han encontrado campos numéricos. Operación cancelada.")
+            return
+
+def mostrarMenuFiltrarAgrupar():
+    print("╔══════════ Filtrar o Agrupar ═════════╗")
+    print("╠ 1. Filtrar.")
+    print("╠ 2. Agrupar (Solo campos numéricos).")
+    print("╚══════════════════════════════════════╝")
 
 #############################################################################
 #
@@ -568,6 +660,16 @@ def mostrarCamposNumericosEnMenu():
 
     return (True if cnt > 0 else False,cnt) # si no hay campos numéricos devuelvo un False para que no se siga con el proceso
 
+# Mostramos el DataFrame que nos pasan en forma de tabla
+def mostrarDataFrame(dataFrame):
+    print("╔══════════════════════════════════ Contenido de la lista ═══════════════════════════════════")
+    cnt=0
+    for i, entrada in dataFrame.iterrows():
+        print(f"╠ {entrada}")
+        cnt+=1
+    print("╚════════════════════════════════════════════════════════════════════════════════════════════")
+    print(f"Se han mostrado un total de {cnt} elementos.")
+
 # En la función generarTopN() de la opción 7 unicamente queremos los campos numéricos por lo que debemos recorrer campos[] en busca del campo numérico que se corresponda con el número que se ha mostrado en mostrarCamposNumericosEnMenu()
 def obtenerCampoNumeroEnCampos(index):
     global campos
@@ -613,7 +715,7 @@ def init():
             case 7: generarTopN()
             case 8: cargarArchivo()
             case 9: aniadirEstadisticaOCalculo()
-            case 10: print("opcion 10")
+            case 10: filtrosAgrupaciones()
             case 11: print("opcion 11")
             case 12: exportarResultados()
             case 13 : print("¡Hasta pronto!")
