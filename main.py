@@ -616,7 +616,6 @@ def generarGraficos():
             x = df["Recoveries"]
             y = df["Yellow Cards"]
             nombres = df["Name"]
-            plt.figure(figsize=(10, 6))
             plt.scatter(x, y, alpha=0.6)
             plt.title("Jugadores con estilo de juego agresivo (entradas vs tarjetas amarillas).")
             plt.xlabel("Cantidad de Recuperaciones")
