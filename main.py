@@ -564,6 +564,80 @@ def mostrarMenuFiltrarAgrupar():
 #
 #############################################################################
 
+def generarGraficos():
+    # Primero comprobamos que haya contenido
+    global diccionarios, campos
+    if len(campos) == 0:
+        print("No se puede realizar estadísticas o cálculos porque no hay campos. Crea un nuevo campo con la opción 1.")
+        return
+    if len(diccionarios) == 0:
+        print("No se puede realizar estadísticas o cálculos porque no hay elementos. Registra un nuevo elemento con la opción 3.")
+        return
+    
+    mostrarMenuGraficos()
+    opt = obtenerOpcion(1,4)
+    df = pd.DataFrame(diccionarios)
+    match opt:
+        case 1: # Cantidad de goles por equipo (gráfico de barras)
+            golesPorEquipo = df.groupby("Team")["Goals scored"].sum() # sumamos la cantidad de goles marcados por cada jugador por equipo
+            plt.bar(golesPorEquipo.index,golesPorEquipo) # eje_x, eje_y | golesPorEquipo es una serie y por defecto ya devuelve los varios y usa como index el contenido del campo por el que ha agrupado
+            plt.title("Cantidad de goles por equipo.")
+            plt.xlabel("Equipos")
+            plt.ylabel("Goles")
+            plt.xticks(rotation=45, ha='right') # rotamos un poco los nombres para poder leerlos
+            plt.grid(True, alpha=0.6)
+            plt.show()
+            plt.close()
+        case 2: # Cantidad de pases por equipo (gráfico de barras)
+            pasesPorEquipo = df.groupby("Team")["Passes"].sum()
+            plt.bar(pasesPorEquipo.index,pasesPorEquipo)
+            plt.title("Cantidad de pases por equipo.")
+            plt.xlabel("Equipos")
+            plt.ylabel("Pases")
+            plt.xticks(rotation=45, ha='right')
+            plt.grid(True, alpha=0.6)
+            plt.show()
+            plt.close()
+        case 3: # Goles marcados por cada posición (gráfico de sectores)
+            golesMarcadosPorPorteros = df[df["Position"] == "Goalkeeper"]["Goals scored"].sum()
+            golesMarcadosPorDefensas = df[df["Position"] == "Defender"]["Goals scored"].sum()
+            golesMarcadosPorMediocentros = df[df["Position"] == "Midfielder"]["Goals scored"].sum()
+            golesMarcadosPorDelanteros = df[df["Position"] == "Forward"]["Goals scored"].sum()
+            print(f"{golesMarcadosPorDelanteros} frente a {golesMarcadosPorDefensas}")
+            plt.pie(
+                [golesMarcadosPorDelanteros, golesMarcadosPorMediocentros, golesMarcadosPorDefensas, golesMarcadosPorPorteros],
+                labels=["Goles marcados por delanteros", "Goles marcados por mediocentros", "Goles marcados por defensas", "Goles marcados por porteros"],
+                autopct="%1.1f%%"
+            )
+            plt.title("Comparativa de goles marcados en cada posición.")
+            plt.show()
+            plt.close()
+        case 4: # Jugadores con estilo de juego agresivo (gráfico de dispersión)
+            x = df["Recoveries"]
+            y = df["Yellow Cards"]
+            nombres = df["Name"]
+            plt.figure(figsize=(10, 6))
+            plt.scatter(x, y, alpha=0.6)
+            plt.title("Jugadores con estilo de juego agresivo (entradas vs tarjetas amarillas).")
+            plt.xlabel("Cantidad de Recuperaciones")
+            plt.ylabel("Tarjetas Amarillas")
+
+            # Agregamos los nombres a los puntos de cada jugador
+            for i, txt in enumerate(nombres):
+                plt.annotate(txt, (x[i], y[i]), fontsize=8, rotation=45,xytext=(5,0), textcoords='offset points')
+
+            plt.show()
+            plt.close()
+
+def mostrarMenuGraficos():
+    print("╔═════════════════════════════════════════════ Gráficos Disponibles ════════════════════════════════════════════╗")
+    print("╠ 1. Cantidad de goles por equipo (gráfico de barras).")
+    print("╠ 2. Cantidad de pases por equipo (gráfico de barras).")
+    print("╠ 3. Goles marcados por cada posición (gráfico de sectores).")
+    print("╠ 4. Jugadores con estilo de juego agresivo (gráfico de dispersión).")
+    print("╠═══ Esto se calcula comparando la cantidad de recuperaciones y tarjetas amarillas recibidas por jugador.")
+    print("╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝")
+
 #############################################################################
 #
 #               APARTADO 12: Exportar los resultados.
@@ -716,7 +790,7 @@ def init():
             case 8: cargarArchivo()
             case 9: aniadirEstadisticaOCalculo()
             case 10: filtrosAgrupaciones()
-            case 11: print("opcion 11")
+            case 11: generarGraficos()
             case 12: exportarResultados()
             case 13 : print("¡Hasta pronto!")
 
